@@ -33,6 +33,8 @@ nl = vesin.torch.NeighborList(cutoff=HYPERS["cutoff"], full_list=True)
 
 
 def compute(calculator, frames, do_grad, device):
+    calculator.to(device)
+
     all_rij = []
     all_i = []
     all_j = []
@@ -112,4 +114,8 @@ if sys.platform.startswith("linux"):
 else:
     max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
 
-print(max_mem_mib / n_atoms, "MiB/atom")
+print(max_mem_mib / n_atoms, "MiB/atom on CPU")
+
+if device == "cuda":
+    max_memory = torch.cuda.memory.max_memory_allocated(device) / 1024 / 1024
+    print(max_mem_mib / n_atoms, "MiB/atom on GPU")
