@@ -1,5 +1,5 @@
 {
-    "n_iters": 50,
+    "n_iters": 200,
     "max_radial": 6,
     "max_angular": 6,
     "cutoff": 5.5,

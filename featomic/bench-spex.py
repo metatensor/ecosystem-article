@@ -117,5 +117,5 @@ else:
 print(max_mem_mib / n_atoms, "MiB/atom on CPU")
 
 if device == "cuda":
-    max_memory = torch.cuda.memory.max_memory_allocated(device) / 1024 / 1024
-    print(max_mem_mib / n_atoms, "MiB/atom on GPU")
+    max_memory_cuda_mib = torch.cuda.memory.max_memory_allocated(device) / 1024 / 1024
+    print(max_memory_cuda_mib / n_atoms, "MiB/atom on GPU")
