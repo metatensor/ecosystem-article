@@ -1,7 +1,8 @@
 import json
-import resource
 import sys
 import time
+
+import memray
 
 import ase.io
 from featomic import SoapPowerSpectrum
@@ -14,19 +15,19 @@ with open(sys.argv[1]) as fd:
 frames = ase.io.read(sys.argv[2], ":")
 n_atoms = sum(len(f) for f in frames)
 
-calculator = SoapPowerSpectrum(
-    cutoff={
+soap_hypers = {
+    "cutoff": {
         "radius": HYPERS["cutoff"],
         "smoothing": {
             "type": "ShiftedCosine",
             "width": HYPERS["cutoff_width"],
         },
     },
-    density={
+    "density": {
         "type": "Gaussian",
         "width": HYPERS["atomic_width"],
     },
-    basis={
+    "basis": {
         "type": "TensorProduct",
         "max_angular": HYPERS["max_angular"],
         "radial": {
@@ -34,7 +35,9 @@ calculator = SoapPowerSpectrum(
             "max_radial": HYPERS["max_radial"],
         },
     },
-)
+}
+
+calculator = SoapPowerSpectrum(**soap_hypers)
 
 # warmup
 for _ in range(3):
@@ -52,9 +55,7 @@ for _ in range(HYPERS["n_iters"]):
 stop = time.time()
 print(1e3 * (stop - start) / HYPERS["n_iters"] / n_atoms, "ms/atom")
 
-if sys.platform.startswith("linux"):
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-else:
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
-
-print(max_mem_mib / n_atoms, "MiB/atom")
+memray_bin = f"memray/featomic-{sys.argv[2]}-{sys.argv[3]}.bin"
+with memray.Tracker(memray_bin, native_traces=True):
+    calculator = SoapPowerSpectrum(**soap_hypers)
+    _ = calculator.compute(frames, gradients=gradients)

@@ -1,8 +1,9 @@
 import json
-import resource
 import sys
 import time
 import os
+
+import memray
 
 import ase.io
 from dscribe.descriptors import SOAP
@@ -49,9 +50,18 @@ for _ in range(HYPERS["n_iters"]):
 stop = time.time()
 print(1e3 * (stop - start) / HYPERS["n_iters"] / n_atoms, "ms/atom")
 
-if sys.platform.startswith("linux"):
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-else:
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
-
-print(max_mem_mib / n_atoms, "MiB/atom")
+memray_bin = f"memray/dscribe-{sys.argv[2]}-{sys.argv[3]}.bin"
+with memray.Tracker(memray_bin, native_traces=True):
+    calculator = SOAP(
+        species=list(all_types),
+        periodic=True,
+        r_cut=HYPERS["cutoff"],
+        n_max=HYPERS["max_radial"] + 1,
+        l_max=HYPERS["max_angular"],
+        sigma=HYPERS["atomic_width"],
+        rbf="gto",
+    )
+    if do_grad:
+        _ = calculator.derivatives(frames, n_jobs=os.cpu_count())
+    else:
+        _ = calculator.create(frames, n_jobs=os.cpu_count())

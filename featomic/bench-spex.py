@@ -1,10 +1,11 @@
 import json
-import resource
 import sys
 import time
 
+import memray
+
 import ase.io
-import spex.metatensor
+import spex
 import vesin.torch
 import torch
 
@@ -20,7 +21,7 @@ all_types = set()
 for frame in frames:
     all_types.update(frame.numbers)
 
-calculator = spex.metatensor.SoapPowerSpectrum(
+calculator = spex.SphericalExpansion(
     cutoff=HYPERS["cutoff"],
     max_angular=HYPERS["max_angular"],
     radial={"LaplacianEigenstates": {"max_radial": HYPERS["max_radial"]}},
@@ -66,14 +67,14 @@ def compute(calculator, frames, do_grad, device):
         structure.append(torch.full((len(frame),), i_frame))
         center.append(torch.arange(len(frame)))
 
-    soap = calculator(
+    spex = calculator(
         torch.cat(all_rij).to(device),
         torch.cat(all_i).to(device),
         torch.cat(all_j).to(device),
         torch.cat(all_species).to(device),
-        torch.cat(structure).to(device),
-        torch.cat(center).to(device),
     )
+
+    soap = [torch.einsum("imnc,imNC->inNcC", e, e) for e in spex]
 
     if do_grad:
         raise Exception("gradients of SOAP are very slow with autodiff")
@@ -108,14 +109,22 @@ for _ in range(HYPERS["n_iters"]):
 stop = time.time()
 print(1e3 * (stop - start) / HYPERS["n_iters"] / n_atoms, "ms/atom")
 
+if device == "cuda":
+    torch.cuda.memory.reset_peak_memory_stats()
 
-if sys.platform.startswith("linux"):
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-else:
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
+memray_bin = f"memray/spex-{sys.argv[2]}-{sys.argv[3]}-{sys.argv[4]}.bin"
+with memray.Tracker(memray_bin, native_traces=True):
+    calculator = spex.SphericalExpansion(
+        cutoff=HYPERS["cutoff"],
+        max_angular=HYPERS["max_angular"],
+        radial={"LaplacianEigenstates": {"max_radial": HYPERS["max_radial"]}},
+        angular="SphericalHarmonics",
+        species={"Orthogonal": {"species": list(all_types)}},
+        cutoff_function={"ShiftedCosine": {"width": HYPERS["cutoff_width"]}},
+    )
+    _ = compute(calculator, frames, do_grad, device)
 
-print(max_mem_mib / n_atoms, "MiB/atom on CPU")
 
 if device == "cuda":
-    max_memory_cuda_mib = torch.cuda.memory.max_memory_allocated(device) / 1024 / 1024
-    print(max_memory_cuda_mib / n_atoms, "MiB/atom on GPU")
+    max_memory_cuda_mib = torch.cuda.memory.max_memory_allocated() / 1024**2
+    print(max_memory_cuda_mib, "MiB on GPU")

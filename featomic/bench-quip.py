@@ -1,7 +1,8 @@
 import json
-import resource
 import sys
 import time
+
+import memray
 
 import ase.io
 import quippy
@@ -44,9 +45,7 @@ stop = time.time()
 print(1e3 * (stop - start) / HYPERS["n_iters"] / n_atoms, "ms/atom")
 
 
-if sys.platform.startswith("linux"):
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-else:
-    max_mem_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024
-
-print(max_mem_mib / n_atoms, "MiB/atom")
+memray_bin = f"memray/quip-{sys.argv[2]}-{sys.argv[3]}.bin"
+with memray.Tracker(memray_bin, native_traces=True):
+    soap_calculator = quippy.descriptors.Descriptor(" ".join(quip_soap_hypers))
+    _ = soap_calculator.calc(frames, grad=do_grad)
