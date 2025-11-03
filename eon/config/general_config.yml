@@ -10,12 +10,12 @@ paths:
   plots: "results/04_plots"
 eon:
   config: "resources/config.ini"
-  num_steps: 28
+  num_steps: 27
 pet_mad:
   version: "v1.1.0"
 plotting:
   plot_structures: "crit_points"
-  facecolor: "floralwhite"
+  facecolor: "white"
   title: "NEB Path Optimization"
   draw_reactant:
     x: 30.0

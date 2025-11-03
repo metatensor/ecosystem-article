@@ -4,7 +4,15 @@ from snakemake.utils import min_version
 min_version("6.0")
 
 
-configfile: "config/general_config.yml"  # Path to config file containing general variables, relative to the workflow folder
+# Path to config file containing general variables, relative to the workflow folder
+configfile: "config/general_config.yml"
+
+
+module ira_align:
+    snakefile:
+        "rules/ira_align.smk"
+    config:
+        config
 
 
 module ase_idpp:
@@ -35,6 +43,9 @@ module plotting:
         config
 
 
+use rule * from ira_align as __ira_align_*
+
+
 use rule * from ase_idpp as __ase_idpp_*
 
 
@@ -45,9 +56,14 @@ use rule * from run_eon
 
 
 use rule plot_neb_path from plotting
-rule minimize_all_endpoints:
+
+
+rule minimize_endpoints:
     input:
-        expand(f"{config['paths']['endpoints']}/{{endpoint}}.con", endpoint=["reactant", "product"])
+        expand(
+            f"{config['paths']['endpoints']}/{{endpoint}}_minimized.con",
+            endpoint=["reactant", "product"],
+        ),
 
 
 rule all:

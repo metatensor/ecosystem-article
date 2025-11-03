@@ -43,5 +43,5 @@ rule plot_neb_path:
             --draw-product {params.dp_x} {params.dp_y} {params.dp_rad} \
             --draw-reactant {params.dr_x} {params.dr_y} {params.dr_rad} \
             --draw-saddle {params.ds_x} {params.ds_y} {params.ds_rad} \
-            --title "{params.title}"
+            --ase-rotation="90x,0y,0z" --title "{params.title}"
         """
