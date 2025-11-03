@@ -39,6 +39,7 @@ rule do_neb:
     output:
         results_dat=f"{config['paths']['neb']}/results.dat",
         neb_con=f"{config['paths']['neb']}/neb.con",
+        neb_dat=f"{config['paths']['neb']}/neb.dat",
         all_neb_dat=expand(f"{config['paths']['neb']}/neb_{{num:03d}}.dat", num=range(config["eon"]["num_steps"])),
     params:
         opath=config['paths']['neb']
