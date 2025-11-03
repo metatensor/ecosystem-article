@@ -4,7 +4,7 @@
 rule do_minimization:
     input:
         config="resources/config_minim.ini",
-        endpoint="resources/{endpoint}.con",
+        endpoint=f"{config['paths']['endpoints']}/{{endpoint}}_pre_aligned.con",
         model=expand(
             f"{config['paths']['models']}/pet-mad-{{version}}.pt",
             version=config["pet_mad"]["version"],
