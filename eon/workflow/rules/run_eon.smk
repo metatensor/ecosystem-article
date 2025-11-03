@@ -10,7 +10,6 @@ rule do_minimization:
             version=config["pet_mad"]["version"],
         ),
     output:
-        # One of reactant or product
         endpoint=f"{config['paths']['endpoints']}/{{endpoint}}.con",
     shadow:
         "minimal"
@@ -32,7 +31,7 @@ rule do_neb:
         product=f"{config['paths']['endpoints']}/product.con",
         path_images=expand(
             f"{config['paths']['idpp']}/path/{{num:02d}}.con",
-            num=range(config['common']["number_of_intermediate_imgs"] + 2),
+            num=range(config["common"]["number_of_intermediate_imgs"] + 2),
         ),
         model=expand(
             f"{config['paths']['models']}/pet-mad-{{version}}.pt",
@@ -42,9 +41,16 @@ rule do_neb:
         results_dat=f"{config['paths']['neb']}/results.dat",
         neb_con=f"{config['paths']['neb']}/neb.con",
         neb_dat=f"{config['paths']['neb']}/neb.dat",
-        all_neb_dat=expand(f"{config['paths']['neb']}/neb_{{num:03d}}.dat", num=range(config["eon"]["num_steps"])),
+        all_neb_dat=expand(
+            f"{config['paths']['neb']}/neb_{{num:03d}}.dat",
+            num=range(config["eon"]["num_steps"]),
+        ),
+        all_neb_con=expand(
+            f"{config['paths']['neb']}/neb_path_{{num:03d}}.con",
+            num=range(config["eon"]["num_steps"]),
+        ),
     params:
-        opath=config['paths']['neb']
+        opath=config["paths"]["neb"],
     shadow:
         "minimal"
     shell:
@@ -52,8 +58,8 @@ rule do_neb:
         cp {input.model} {params.opath}/
         cp {input.config} {params.opath}/config.ini
         cp {input.idpp_path} {params.opath}/
-        cp {input.reactant} {params.opath}/
-        cp {input.product} {params.opath}/
+        cp {input.reactant} {params.opath}/reactant.con
+        cp {input.product} {params.opath}/product.con
         cd {params.opath}
         eonclient 2>&1 || true
         """

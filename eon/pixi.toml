@@ -46,6 +46,7 @@ ase = ">=3.25.0, <4"
 rgpycrumbs = "==0.0.2"
 
 [feature.eon.dependencies]
+ira = ">=2.2.0,<3"
 eigen = ">=3.4.0,<4"
 cmake = ">=4.0.3,<5"
 highfive = ">=2.10.1,<3"

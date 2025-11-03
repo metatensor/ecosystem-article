@@ -4,7 +4,7 @@ import ase.io
 from ase.mep import NEB
 
 
-# Depends on the endpoint minimization
+# Depends on the endpoint preparation and alignment
 rule generate_idpp_images:
     input:
         reactant=f"{config['paths']['endpoints']}/reactant.con",
