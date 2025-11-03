@@ -28,6 +28,8 @@ rule do_neb:
     input:
         config="resources/config_neb.ini",
         idpp_path=f"{config['paths']['idpp']}/idppPath.dat",
+        reactant=f"{config['paths']['endpoints']}/reactant.con",
+        product=f"{config['paths']['endpoints']}/product.con",
         path_images=expand(
             f"{config['paths']['idpp']}/path/{{num:02d}}.con",
             num=range(config['common']["number_of_intermediate_imgs"] + 2),
@@ -50,6 +52,8 @@ rule do_neb:
         cp {input.model} {params.opath}/
         cp {input.config} {params.opath}/config.ini
         cp {input.idpp_path} {params.opath}/
+        cp {input.reactant} {params.opath}/
+        cp {input.product} {params.opath}/
         cd {params.opath}
         eonclient 2>&1 || true
         """
