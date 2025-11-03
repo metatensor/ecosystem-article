@@ -10,7 +10,7 @@ rule do_minimization:
             version=config["pet_mad"]["version"],
         ),
     output:
-        endpoint=f"{config['paths']['endpoints']}/{{endpoint}}.con",
+        endpoint=f"{config['paths']['endpoints']}/{{endpoint}}_minimized.con",
     shadow:
         "minimal"
     shell:

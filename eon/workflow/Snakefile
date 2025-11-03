@@ -58,6 +58,14 @@ use rule * from run_eon
 use rule plot_neb_path from plotting
 
 
+rule minimize_endpoints:
+    input:
+        expand(
+            f"{config['paths']['endpoints']}/{{endpoint}}_minimized.con",
+            endpoint=["reactant", "product"],
+        ),
+
+
 rule all:
     input:
         rules.plot_neb_path.output,

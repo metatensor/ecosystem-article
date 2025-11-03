@@ -10,7 +10,7 @@ paths:
   plots: "results/04_plots"
 eon:
   config: "resources/config.ini"
-  num_steps: 15
+  num_steps: 21
 pet_mad:
   version: "v1.1.0"
 plotting:

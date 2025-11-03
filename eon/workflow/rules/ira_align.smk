@@ -3,31 +3,25 @@
 import ase.io
 import ira_mod
 import numpy as np
+import copy
 
 
 rule prepare_endpoints:
     input:
-        reactant="resources/reactant.con",
-        product="resources/product.con",
+        reactant=f"{config['paths']['endpoints']}/reactant_minimized.con",
+        product=f"{config['paths']['endpoints']}/product_minimized.con",
     output:
         reactant=f"{config['paths']['endpoints']}/reactant.con",
         product=f"{config['paths']['endpoints']}/product.con",
     run:
-        # Load and center reactant and product
+        # Load minimized reactant and product
         try:
             reactant_atm = ase.io.read(input.reactant)
             product_atm = ase.io.read(input.product)
         except FileNotFoundError as e:
-            raise Exception(
-                f"Error: {e}. Make sure reactant.con and product.con are present."
-            )
+            raise Exception(f"Error: {e}. Make sure minimized endpoints are present.")
 
-            # Center them
-        for atm in [reactant_atm, product_atm]:
-            atm.set_cell([25, 25, 25])
-            atm.center()
-
-        print("Read and centered reactant.con and product.con.")
+        print("Read minimized reactant and product.")
 
         # Prepare data for the IRA library
         nat1 = len(reactant_atm)
@@ -46,7 +40,7 @@ rule prepare_endpoints:
 
             # Initialize and run IRA shape-matching
         ira = ira_mod.IRA()
-        kmax_factor = 1.8  # Default value
+        kmax_factor = 1.8
 
         print("Running ira.match to find rotation, translation, AND permutation...")
         # r = rotation, t = translation, p = permutation, hd = Hausdorff distance
@@ -55,7 +49,7 @@ rule prepare_endpoints:
         print(f"Matching complete. Hausdorff Distance (hd) = {hd:.6f} Å")
 
         # Create the fully aligned and permuted product structure
-        # 1. Apply rotation (r) and translation (t) to the original product coordinates
+        # Apply rotation (r) and translation (t) to the original product coordinates
         # This aligns the product's orientation to the reactant's
         coords2_aligned = (coords2 @ r.T) + t
 
