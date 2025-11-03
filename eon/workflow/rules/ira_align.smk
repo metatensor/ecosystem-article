@@ -60,11 +60,8 @@ rule prepare_endpoints:
         coords2_aligned_permuted = coords2_aligned[p]
 
         # Save the new aligned-and-permuted structure
-        aligned_product_atm = ase.Atoms(
-            symbols=reactant_atm.get_chemical_symbols(),  # Use reactant's order
-            positions=coords2_aligned_permuted,  # Use new aligned/permuted positions
-            cell=reactant_atm.get_cell(),  # Use same cell
-        )
+        aligned_product_atm = copy.deepcopy(reactant_atm)
+        aligned_product_atm.positions = coords2_aligned_permuted
 
         # Save files
         ase.io.write(output.product, aligned_product_atm)
