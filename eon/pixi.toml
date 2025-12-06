@@ -55,9 +55,7 @@ pkgconf = ">=2.5.1,<3"
 openblas = ">=0.3.30,<0.4"
 compilers = ">=1.10.0,<2"
 gfortran = ">=13.3.0,<13.4"
-fmt = ">=11.2.0,<12"
-spdlog = ">=1.15.3,<2"
-eon = ">=2.8.0,<3"
+eon = ">=2.8.2,<3"
 
 [feature.plumed.pypi-dependencies]
 chemiscope = ">=0.8.6, <0.9"
