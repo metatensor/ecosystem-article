@@ -1,7 +1,7 @@
 * About
 This is for the oxadiazole NEB example. Basically the steps being automated are:
 - Obtain PET-MAD
-- Minimize endpoints (EON)
+- Minimize endpoints and re-align endpoints (IRA+EON)
 - Generate IDPP path (ASE)
 - Run EON's MMF-NEB (RO-NEB)
 - Plot
@@ -12,7 +12,7 @@ workflows of [[https://github.com/amritagos][amritagos]]].
 #+caption: DAG for the workflow
 [[file:resources/dag.svg]]
 
-Essentially this is as implemented from [3] [[https://github.com/TheochemUI/eOn/pull/77][in EON]] (also [[https://github.com/TheochemUI/eOn/pull/230][here]]), using systems from [4].
+Essentially this is as implemented with IRA for endpoint alignment [3] while the rest of the workflow uses from [4] [[https://github.com/TheochemUI/eOn/pull/77][in EON]] (also [[https://github.com/TheochemUI/eOn/pull/230][here]]), using systems from [5].
 ** Usage
 #+begin_src bash
 pixi s -e eon
@@ -31,9 +31,11 @@ python -m rgpycrumbs.cli eon plt_neb --con-file neb.con --plot-structures "crit_
 
 [2] R. Goswami, “Bayesian hierarchical models for quantitative estimates for performance metrics applied to saddle search algorithms,” AIP Adv., vol. 15, no. 8, p. 85210, Aug. 2025, doi: 10.1063/5.0283639.
 
-[3] V. Ásgeirsson et al., “Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following,” J. Chem. Theory Comput., vol. 17, no. 8, pp. 4929–4945, Aug. 2021, doi: 10.1021/acs.jctc.1c00462.
+[3] M. Gunde, N. Salles, A. Hémeryck, and L. Martin-Samos, “IRA: a shape matching approach for recognition and comparison of generic atomic patterns,” J. Chem. Inf. Model., vol. 61, no. 11, pp. 5446–5457, Nov. 2021, doi: 10.1021/acs.jcim.1c00567.
 
-[4] O.-P. Koistinen, V. Ásgeirsson, A. Vehtari, and H. Jónsson, “Minimum Mode Saddle Point Searches Using Gaussian Process Regression with Inverse-Distance Covariance Function,” J. Chem. Theory Comput., vol. 16, no. 1, pp. 499–509, Jan. 2020, doi: 10.1021/acs.jctc.9b01038.
+[4] V. Ásgeirsson et al., “Nudged Elastic Band Method for Molecular Reactions Using Energy-Weighted Springs Combined with Eigenvector Following,” J. Chem. Theory Comput., vol. 17, no. 8, pp. 4929–4945, Aug. 2021, doi: 10.1021/acs.jctc.1c00462.
+
+[5] O.-P. Koistinen, V. Ásgeirsson, A. Vehtari, and H. Jónsson, “Minimum Mode Saddle Point Searches Using Gaussian Process Regression with Inverse-Distance Covariance Function,” J. Chem. Theory Comput., vol. 16, no. 1, pp. 499–509, Jan. 2020, doi: 10.1021/acs.jctc.9b01038.
 #+end_quote
 
 ** Additional visual aids
