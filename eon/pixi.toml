@@ -60,12 +60,5 @@ fmt = ">=11.2.0,<12"
 spdlog = ">=1.15.3,<2"
 eon = ">=2.8.1,<2.9"
 
-[feature.r-analysis.dependencies]
-r = ">=4.4,<4.5"
-
-[feature.r-analysis.pypi-dependencies]
-radian = ">=0.6.15, <0.7"
-
 [environments]
 eon = {features = ["eon"]}
-r-analysis = {features = ["r-analysis"]}
