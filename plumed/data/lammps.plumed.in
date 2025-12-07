@@ -1,0 +1,33 @@
+# -*- mode:lammps; -*-
+
+units          real
+atom_style     atomic
+
+read_data      gen/equilibrated.data
+mass           1 39.95
+
+variable seed equal 1995
+# T = Tr * epsilon / kb
+variable ttemp equal 20.53
+
+# --- interactions -----------------------------------------------------------
+pair_style     lj/cut 15
+pair_coeff     1 1 0.24 3.4
+
+# --- initial velocities & thermostat ----------------------------------------
+velocity       all create ${ttemp} ${seed} mom yes rot yes dist gaussian
+
+fix            1 all gle 6 ${ttemp} ${ttemp} ${seed} data/gle.A
+
+# -- Plumed integration --
+fix            3 all plumed plumedfile data/plumed.dat outfile plumed.out
+
+# --- MD settings ------------------------------------------------------------
+timestep       2.5
+thermo         1000
+thermo_style   custom step temp pe etotal press
+
+dump           traj all custom 1000 lj38.lammpstrj id type x y z
+# run            200000
+# 25 ns (10 million steps)
+run             10000000

@@ -1,0 +1,36 @@
+# -*- mode:lammps; -*-
+units           real
+atom_style      atomic
+boundary        p p p
+
+read_data       gen/minimal.data
+mass            1 39.95
+
+variable seed equal 1995
+variable ttemp equal 20.53
+
+# --- Interactions ---
+pair_style      lj/cut 15
+pair_coeff      1 1 0.24 3.4
+
+# --- Step A: Energy Minimization ---
+# This removes any bad contacts and finds a local potential energy minimum,
+# creating a compact cluster.
+thermo          100
+minimize        1.0e-4 1.0e-6 1000 10000
+
+
+# --- Step B: NVT Equilibration ---
+# This gives the atoms thermal velocity at the correct temperature
+# while keeping the volume constant.
+reset_timestep  0
+velocity        all create ${ttemp} ${seed} mom yes rot yes dist gaussian
+fix             NVT all nvt temp ${ttemp} ${ttemp} 100.0
+
+# Equilibrate for 25 ps (10000 steps * 2.5 fs)
+run             10000
+unfix           NVT
+
+
+# --- Step C: Write the good structure to a new file ---
+write_data      gen/equilibrated.data nocoeff

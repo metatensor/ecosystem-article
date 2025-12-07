@@ -1,0 +1,44 @@
+UNITS LENGTH=A ENERGY=kcal/mol
+# gyr: GYRATION ATOMS=1-38
+# walls: UPPER_WALLS ARG=gyr AT=6.0 KAPPA=200.0
+
+histo: METATOMIC ...
+    MODEL=./gen/histo-cv.pt
+    EXTENSIONS_DIRECTORY=./extensions/
+    SPECIES1=1-38
+    SPECIES_TO_TYPES=18
+...
+
+cv1: SELECT_COMPONENTS ARG=histo COMPONENTS=1  # CN=6
+cv2: SELECT_COMPONENTS ARG=histo COMPONENTS=2  # CN=8
+
+mtd: METAD ...
+    ARG=cv1,cv2
+    # PACE: Add a hill every 1-2 picoseconds.
+    # 500 steps * 2.5 fs/step = 1.25 ps.
+    PACE=500
+
+    # HEIGHT: Fraction of k_B*T. At 20.5 K, k_B*T is ~0.04 kcal/mol.
+    # Using twice that for now.
+    HEIGHT=0.04
+
+    # SIGMA: The hill width. Maybe wider hills for a smoother landscape.
+    SIGMA=1.0,0.5
+
+    # BIASFACTOR: This controls the well-tempered nature.
+    # Simulation temperature for barrier crossing is 15 * 20.5 K = 307.5 K.
+    BIASFACTOR=15
+
+    # TEMP: This must match the simulation temperature.
+    TEMP=20.5
+
+    GRID_MIN=0,0
+    GRID_MAX=30,20
+    GRID_BIN=200,200
+    FILE=HILLS
+...
+
+
+# PRINT ARG=cv1,cv2,mtd.*,histo.*,gyr,walls.bias STRIDE=10 FILE=COLVAR
+PRINT ARG=cv1,cv2,mtd.*,histo.* STRIDE=10 FILE=COLVAR
+FLUSH STRIDE=1
