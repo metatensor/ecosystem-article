@@ -28,6 +28,7 @@ rule plot_neb_path:
         ds_x=config["plotting"]["draw_saddle"]["x"],
         ds_y=config["plotting"]["draw_saddle"]["y"],
         ds_rad=config["plotting"]["draw_saddle"]["rad"],
+        _aserot=config["plotting"]["aserot"]
     shell:
         """
         python -m rgpycrumbs.cli eon plt_neb \
@@ -35,7 +36,7 @@ rule plot_neb_path:
             --output-file {output.plot} \
             --plot-structures "{params.plot_structures}" \
             --facecolor "{params.facecolor}" \
-            --input-pattern "{params.ipath}/neb_*.dat" \
+            --input-dat-pattern "{params.ipath}/neb_*.dat" \
             --figsize {params.figsize} \
             --dpi {params.dpi} \
             --zoom-ratio {params.zoom_ratio} \
@@ -43,5 +44,6 @@ rule plot_neb_path:
             --draw-product {params.dp_x} {params.dp_y} {params.dp_rad} \
             --draw-reactant {params.dr_x} {params.dr_y} {params.dr_rad} \
             --draw-saddle {params.ds_x} {params.ds_y} {params.ds_rad} \
-            --ase-rotation="90x,0y,0z" --title "{params.title}"
+            --title "{params.title}" \
+            --ase-rotation {params._aserot}
         """
