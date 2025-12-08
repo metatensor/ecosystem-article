@@ -1,7 +1,7 @@
 [workspace]
 authors = ["Rohit Goswami <rohit.goswami@epfl.ch>"]
-channels = ["metatensor", "conda-forge", "https://repo.prefix.dev/rg-forge", "bioconda"]
-name = "metatensor_ecosystem_paper"
+channels = ["metatensor", "https://repo.prefix.dev/rg-forge", "conda-forge", "bioconda"]
+name = "metatensor_ecosystem_paper_eon"
 platforms = ["linux-64"]
 version = "0.2.0"
 
@@ -59,20 +59,5 @@ gfortran = ">=13.3.0,<13.4"
 eon = ">=2.8.2,<3"
 ira = ">=2.2.0,<3"
 
-[feature.plumed.pypi-dependencies]
-chemiscope = ">=0.8.6, <0.9"
-
-[feature.plumed.dependencies]
-lammps-metatomic = { version = "*", build = "*openmpi*" }
-plumed-metatomic = { version = "*", build = "*openmpi*" }
-
-[feature.r-analysis.dependencies]
-r = ">=4.4,<4.5"
-
-[feature.r-analysis.pypi-dependencies]
-radian = ">=0.6.15, <0.7"
-
 [environments]
 eon = {features = ["eon"]}
-plumed = {features = ["plumed"]}
-r-analysis = {features = ["r-analysis"]}

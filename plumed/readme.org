@@ -1,0 +1,17 @@
+* About
+This contains some supporting scripts to reproduce Figure 15 which depicts free
+energy surface diagnostics for a Lennard-Jones 38 atom cluster.
+#+begin_src bash
+pixi s -e plumed
+python scripts/00_mta_hist_cv.py
+python scripts/01_prep_lammps.py
+lmp -in data/in.equil
+lmp -in data/lammps.plumed.in
+uv run plotty.py --oct-struct-file data/lj-oct.xyz \
+    --ico-struct-file data/lj-ico.xyz \
+    --temperature 20.53
+#+end_src
+
+** TODO Generate ~Snakefile~
+** TODO More documentation
+** TODO More reproducers -- FAIR environments

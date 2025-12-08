@@ -1,0 +1,44 @@
+# plumed.reweight.dat - For robust post-processing analysis
+
+UNITS LENGTH=A ENERGY=kcal/mol
+
+# 1. Recalculate your METATOMIC CVs on-the-fly for each frame.
+histo: METATOMIC ...
+    MODEL=./gen/histo-cv.pt
+    EXTENSIONS_DIRECTORY=./extensions/
+    SPECIES1=1-38
+    SPECIES_TO_TYPES=18
+...
+cv1: SELECT_COMPONENTS ARG=histo COMPONENTS=1
+cv2: SELECT_COMPONENTS ARG=histo COMPONENTS=2
+
+# 2. Load the bias from your simulation as a static potential.
+mtd: METAD ...
+    ARG=cv1,cv2
+    PACE=500000000
+    HEIGHT=0.08
+    BIASFACTOR=15
+    TEMP=20.5
+    SIGMA=0.05,0.02
+    GRID_MIN=0,0
+    GRID_MAX=1.0,1.0
+    FILE=HILLS
+    RESTART=YES
+...
+
+# 3. Calculate the weight for each frame.
+rw: REWEIGHT_BIAS TEMP=20.5 ARG=mtd.bias
+
+# 4. Use HISTOGRAM (not KDE) for block-averaged, weighted histograms.
+hh: HISTOGRAM ...
+    ARG=cv1,cv2
+    GRID_MIN=0,0
+    GRID_MAX=1.0,1.0
+    GRID_BIN=100,100
+    LOGWEIGHTS=rw
+    NORMALIZATION=true
+    CLEAR=50000
+...
+
+# 5. Dump each block's histogram to a separate file.
+DUMPGRID GRID=hh FILE=hist_block.dat STRIDE=50000
